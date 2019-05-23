@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Knapsack.Task>
+
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p><a class="btn btn-default btn-primary btn-success" asp-controller="Tasks" asp-action="CreateTask">New task</a></p>
+
+<table class="table">
+    <tr>
+        <th>
+            Id
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TaskName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacity)
+        </th>
+        <th>
+            %
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+    </tr>
+    
+    @foreach (var task in Model)
+    {
+        <tr>
+            <th>
+                @Html.DisplayFor(modelItem => task.TaskId)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => task.TaskName)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => task.Capacity)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => task.PercentComplete)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => task.Status)
+            </th>
+            <th>
+                <p><a class="btn btn-default btn-primary btn-danger" asp-controller="Tasks" asp-action="DeleteTask" asp-route-taskId=@task.TaskId >Delete</a></p>
+            </th>
+        </tr>
+    }
+</table>

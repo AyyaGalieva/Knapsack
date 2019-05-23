@@ -1,0 +1,90 @@
+﻿@model Knapsack.CreateTaskViewModel
+@{
+    ViewData["Title"] = "New Task";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <section>
+            <form asp-controller="Tasks" asp-action="AddTask" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                <hr/>
+                <div class="form-group">
+                    <label asp-for="TaskName" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="TaskName" class="form-control"/>
+                        <span asp-validation-for="TaskName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Capacity" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Capacity" class="form-control"/>
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
+                    </div>
+                </div>
+                <h3>Choose items from existing:</h3>
+                <table class="table" id="ItemList">
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Worth</th>
+                        <th>Weight</th>
+                        <th></th>
+                    </tr>
+                    @for (var i = 0; i < Model.ItemViewModels.Count; i++)
+                    {
+                        <tr>
+                            <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].ItemId)</th>
+                            <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].ItemName)</th>
+                            <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].Worth)</th>
+                            <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].Weight)</th>
+                            <th>
+                                @Html.CheckBoxFor(modelItem => Model.ItemViewModels[i].IsChecked)
+                                @Html.HiddenFor(modelItem => Model.ItemViewModels[i].ItemId)
+                            </th>
+                        </tr>
+                    }
+                </table>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-default" asp-controller="Tasks" asp-action="CreateItem" asp-route-taskName="@Model.TaskName" asp-route-capacity="@Model.Capacity" >+ Add item</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-success" asp-controller="Tasks" asp-action="AddTask" >Submit</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+@*
+<script>
+    var SaveList = function() {
+        var arrItem = [];
+        var choosenIds = "";
+        $("#ItemList li input[type=checkbox]").each(function(index, val) {
+            var curId = $val.attr("Id");
+            var isChecked = $("#" + curId).is(":checked", true);
+            if (isChecked) {
+                arrItem.push(curId);
+            }
+        });
+        if (arrItem.length > 0) {
+            choosenIds = arrItem.toString();
+            $.ajax({
+                url: "Task/SaveList",
+                type: "POST",
+                data: { ItemList: choosenIds },
+                success: function(response) {
+
+                }
+            });
+        }
+        
+    }
+</script>*@
