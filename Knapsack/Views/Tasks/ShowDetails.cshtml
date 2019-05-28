@@ -1,0 +1,59 @@
+﻿@model DetailsViewModel
+
+@{
+    ViewData["Title"] = "Details for ";
+}
+
+<h2>@ViewData["Title"]@Model.TaskName:</h2>
+
+<h3>@Html.DisplayNameFor(model => model.Capacity): @Model.Capacity</h3>
+<h3>Max worth: @Model.MaxWorth</h3>
+<h3>Items:</h3>
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Worth
+        </th>
+        <th>
+            Weight
+        </th>
+        <th>
+        </th>
+    </tr>
+    
+    @foreach (var item in Model.ItemViewModels)
+    {
+        if (item.IsChecked)
+         {
+             <tr class="success">
+                 <th>
+                     @Html.DisplayFor(modelItem => item.ItemName)
+                 </th>
+                 <th>
+                     @Html.DisplayFor(modelItem => item.Worth)
+                 </th>
+                 <th>
+                     @Html.DisplayFor(modelItem => item.Weight)
+                 </th>
+             </tr>
+         }
+        else
+        {
+            <tr class="danger">
+                <th>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Worth)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Weight)
+                </th>
+            </tr>
+        }
+        
+    }
+</table>

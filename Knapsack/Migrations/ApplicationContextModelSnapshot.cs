@@ -20,24 +20,23 @@ namespace Knapsack.Migrations
 
             modelBuilder.Entity("Knapsack.Details", b =>
                 {
-                    b.Property<int>("DetailsId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("TaskId");
 
                     b.Property<int>("ExecutionTime");
 
                     b.Property<int>("MaxWorth");
 
-                    b.HasKey("DetailsId");
+                    b.HasKey("TaskId");
 
                     b.ToTable("details");
                 });
 
             modelBuilder.Entity("Knapsack.ExecutionProcess", b =>
                 {
-                    b.Property<int>("ExecutionProcessId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("TaskId");
+
+                    b.Property<string>("AllItems")
+                        .IsRequired();
 
                     b.Property<string>("BestCombination")
                         .IsRequired();
@@ -47,7 +46,7 @@ namespace Knapsack.Migrations
 
                     b.Property<int>("CurrentMaxWorth");
 
-                    b.HasKey("ExecutionProcessId");
+                    b.HasKey("TaskId");
 
                     b.ToTable("execution_processes");
                 });
@@ -79,10 +78,6 @@ namespace Knapsack.Migrations
 
                     b.Property<int>("Capacity");
 
-                    b.Property<int>("DetailsId");
-
-                    b.Property<int>("ExecutionProcessId");
-
                     b.Property<int>("PercentComplete");
 
                     b.Property<string>("Status")
@@ -94,10 +89,6 @@ namespace Knapsack.Migrations
                         .HasMaxLength(50);
 
                     b.HasKey("TaskId");
-
-                    b.HasIndex("DetailsId");
-
-                    b.HasIndex("ExecutionProcessId");
 
                     b.ToTable("tasks");
                 });
@@ -115,16 +106,19 @@ namespace Knapsack.Migrations
                     b.ToTable("taskItem");
                 });
 
-            modelBuilder.Entity("Knapsack.Task", b =>
+            modelBuilder.Entity("Knapsack.Details", b =>
                 {
-                    b.HasOne("Knapsack.Details", "Details")
-                        .WithMany()
-                        .HasForeignKey("DetailsId")
+                    b.HasOne("Knapsack.Task", "Task")
+                        .WithOne("Details")
+                        .HasForeignKey("Knapsack.Details", "TaskId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.HasOne("Knapsack.ExecutionProcess", "ExecutionProcess")
-                        .WithMany()
-                        .HasForeignKey("ExecutionProcessId")
+            modelBuilder.Entity("Knapsack.ExecutionProcess", b =>
+                {
+                    b.HasOne("Knapsack.Task", "Task")
+                        .WithOne("ExecutionProcess")
+                        .HasForeignKey("Knapsack.ExecutionProcess", "TaskId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

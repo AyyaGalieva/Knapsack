@@ -8,7 +8,9 @@ namespace Knapsack
     public class Details
     {
         [Key]
-        public int DetailsId { get; set; }
+        [ForeignKey("Task")]
+        public int TaskId { get; set; }
+        public Task Task { get; set; }
         [Required]
         public int MaxWorth { get; set; }
         [Required]

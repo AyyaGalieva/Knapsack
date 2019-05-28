@@ -29,3 +29,4 @@ D:\3course\C#\Rukzack\Knapsack\Knapsack\obj\Debug\netcoreapp2.1\Knapsack.csproj.
 D:\3course\C#\Rukzack\Knapsack\Knapsack\obj\Debug\netcoreapp2.1\Razor\Views\Tasks\Index.g.cshtml.cs
 D:\3course\C#\Rukzack\Knapsack\Knapsack\obj\Debug\netcoreapp2.1\Razor\Views\Tasks\CreateTask.g.cshtml.cs
 D:\3course\C#\Rukzack\Knapsack\Knapsack\obj\Debug\netcoreapp2.1\Razor\Views\Tasks\CreateItem.g.cshtml.cs
+D:\3course\C#\Rukzack\Knapsack\Knapsack\obj\Debug\netcoreapp2.1\Razor\Views\Tasks\ShowDetails.g.cshtml.cs

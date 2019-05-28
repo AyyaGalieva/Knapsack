@@ -21,7 +21,7 @@ namespace Knapsack.Controllers
         
         public IActionResult Index()
         {
-            var tasks = db.Tasks.ToList();
+            var tasks = db.Tasks.Include(t => t.Details).ToList();
             return View(tasks);
         }
         
@@ -39,15 +39,18 @@ namespace Knapsack.Controllers
         [HttpPost]
         public IActionResult AddTask(CreateTaskViewModel model)
         {
-            var execProcess = new ExecutionProcess
-                {BestCombination = "", CurrentMaxWorth = 0, CurrentItemsCombination = ""};
-            var newTask = new Task
-            {
-                TaskName = model.TaskName, Status = "in progress", Capacity = model.Capacity, PercentComplete = 0,
-                Details = new Details(), ExecutionProcess = execProcess
-            };
+            var newTask = new Task { TaskName = model.TaskName, Status = "in progress", Capacity = model.Capacity, PercentComplete = 0 };
             db.Tasks.Add(newTask);
             db.SaveChanges();
+            
+            var execProcess = new ExecutionProcess {TaskId = newTask.TaskId, BestCombination = "", CurrentMaxWorth = 0, CurrentItemsCombination = "", AllItems = ""};
+            db.ExecutionProcesses.Add(execProcess);
+            db.SaveChanges();
+            
+            var details = new Details {TaskId = newTask.TaskId, ExecutionTime = 0, MaxWorth = 0};
+            db.Details.Add(details);
+            db.SaveChanges();
+            
             foreach (var i in model.ItemViewModels)
             {
                 if (i.IsChecked)
@@ -65,9 +68,9 @@ namespace Knapsack.Controllers
                 var item = new ItemViewModel {ItemId = i.ItemId, IsChecked = false, ItemName = i.ItemName, Worth = i.Worth, Weight = i.Weight};
                 computeModel.Items.Add(item);
             }
-         
+            
             ComputeThread thread = new ComputeThread(computeModel);
-            return View("Index", db.Tasks.ToList());
+            return RedirectToAction("Index");
         }
         
         public IActionResult DeleteTask(int taskId)
@@ -107,6 +110,45 @@ namespace Knapsack.Controllers
                 }
             }
             return View("CreateTask", new CreateTaskViewModel {TaskName = taskName, Capacity = capacity, ItemViewModels = viewItems});
+        }
+
+        public IActionResult ShowDetails(int taskId)
+        {
+            var task = db.Tasks.Include(e => e.Details).Include(e => e.ExecutionProcess).FirstOrDefault(t => t.TaskId == taskId);
+            var viewModel = new DetailsViewModel();
+            viewModel.TaskName = task.TaskName;
+            viewModel.Capacity = task.Capacity;
+            viewModel.MaxWorth = task.Details.MaxWorth;
+            
+            var strsAll = task.ExecutionProcess.AllItems.Split(",");
+            var strsTaken = task.ExecutionProcess.BestCombination.Split(",");
+            var allItems = new List<int>();
+            var takenItems = new List<int>();
+            foreach (var id in strsAll)
+            {
+                allItems.Add(Convert.ToInt32(id));
+            }
+            foreach (var id in strsTaken)
+            {
+                takenItems.Add(Convert.ToInt32(id));
+            }
+            var items = new List<ItemViewModel>();
+            foreach (var i in allItems)
+            {
+                var item = db.Items.FirstOrDefault(it => it.ItemId == i);
+                var itemViewModel = new ItemViewModel{IsChecked = false, ItemId = i, ItemName = item.ItemName, Weight = item.Weight, Worth = item.Worth};
+                items.Add(itemViewModel);
+            }
+            foreach (var j in takenItems)
+            {
+                var item = items.FirstOrDefault(it => it.ItemId == j);
+                if (item != null)
+                    item.IsChecked = true;
+            }
+
+            viewModel.ItemViewModels = items;
+            
+            return View(viewModel);
         }
         
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

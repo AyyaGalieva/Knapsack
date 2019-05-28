@@ -7,12 +7,16 @@ namespace Knapsack
     public class ExecutionProcess
     {
         [Key]
-        public int ExecutionProcessId { get; set; }
+        [ForeignKey("Task")]
+        public int TaskId { get; set; }
+        public Task Task { get; set; }
         [Required]
         public int CurrentMaxWorth { get; set; }
         [Required]
         public string BestCombination { get; set; }
         [Required]
         public string CurrentItemsCombination { get; set; }
+        [Required]
+        public string AllItems { get; set; }
     }
 }

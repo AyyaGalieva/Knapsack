@@ -19,11 +19,7 @@ namespace Knapsack
         public int Capacity { get; set; }
         [Required]
         public int PercentComplete { get; set; }
-        public int DetailsId { get; set; }
-        [ForeignKey("DetailsId")]
         public Details Details { get; set; }
-        public int ExecutionProcessId { get; set; }
-        [ForeignKey("ExecutionProcessId")]
         public ExecutionProcess ExecutionProcess { get; set; }
         public List<TaskItem> TaskItems { get; set; }
      

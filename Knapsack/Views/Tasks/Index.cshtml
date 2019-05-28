@@ -48,6 +48,12 @@
             <th>
                 <p><a class="btn btn-default btn-primary btn-danger" asp-controller="Tasks" asp-action="DeleteTask" asp-route-taskId=@task.TaskId >Delete</a></p>
             </th>
+            @if (task.PercentComplete == 100)
+            {
+                <th>
+                    <p><a class="btn btn-default btn-primary btn-success" asp-controller="Tasks" asp-action="ShowDetails" asp-route-taskId=@task.TaskId >Details</a></p>
+                </th>
+            }
         </tr>
     }
 </table>

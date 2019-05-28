@@ -27,7 +27,6 @@
                 <h3>Choose items from existing:</h3>
                 <table class="table" id="ItemList">
                     <tr>
-                        <th>Id</th>
                         <th>Name</th>
                         <th>Worth</th>
                         <th>Weight</th>
@@ -36,7 +35,6 @@
                     @for (var i = 0; i < Model.ItemViewModels.Count; i++)
                     {
                         <tr>
-                            <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].ItemId)</th>
                             <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].ItemName)</th>
                             <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].Worth)</th>
                             <th>@Html.DisplayFor(modelItem => Model.ItemViewModels[i].Weight)</th>
