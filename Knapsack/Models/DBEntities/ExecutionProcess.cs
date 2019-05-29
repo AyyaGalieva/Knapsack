@@ -16,6 +16,9 @@ namespace Knapsack
         public string BestCombination { get; set; }
         [Required]
         public string CurrentItemsCombination { get; set; }
+        public int CurCombSize { get; set; }
+        public int CurCombEnd { get; set; }
+        public int CheckedCombCount { get; set; }
         [Required]
         public string AllItems { get; set; }
     }

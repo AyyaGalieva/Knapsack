@@ -18,12 +18,35 @@ namespace Knapsack.Controllers
         {
             this.db = db;
         }
-        
+
         public IActionResult Index()
         {
             var tasks = db.Tasks.Include(t => t.Details).ToList();
             return View(tasks);
         }
+        
+        public IActionResult Init()
+                {
+                    var tasks = db.Tasks.Include(t => t.Details).ToList();
+                    foreach (var task in tasks)
+                    {
+                        if (task.PercentComplete != 100)
+                        {
+                            var items = db.Tasks.Where(t => t.TaskId == task.TaskId).SelectMany(t => t.TaskItems)
+                                .Select(ti => ti.Item);
+                            
+                            var computeModel = new ComputeModel { TaskId = task.TaskId, Items = new List<ItemViewModel>()};
+                            foreach (var i in items)
+                            {
+                                var item = new ItemViewModel {ItemId = i.ItemId, IsChecked = false, ItemName = i.ItemName, Worth = i.Worth, Weight = i.Weight};
+                                computeModel.Items.Add(item);
+                            }
+                            ComputeThread thread = new ComputeThread(computeModel);
+          
+                        }
+                    }
+                    return RedirectToAction("Index", tasks);
+                }
         
         public IActionResult CreateTask()
         {
@@ -39,11 +62,26 @@ namespace Knapsack.Controllers
         [HttpPost]
         public IActionResult AddTask(CreateTaskViewModel model)
         {
-            var newTask = new Task { TaskName = model.TaskName, Status = "in progress", Capacity = model.Capacity, PercentComplete = 0 };
+            var newTask = new Task
+            {
+                TaskName = model.TaskName, 
+                Status = "in progress", 
+                Capacity = model.Capacity, 
+                PercentComplete = 0
+            };
             db.Tasks.Add(newTask);
             db.SaveChanges();
             
-            var execProcess = new ExecutionProcess {TaskId = newTask.TaskId, BestCombination = "", CurrentMaxWorth = 0, CurrentItemsCombination = "", AllItems = ""};
+            var execProcess = new ExecutionProcess
+            {
+                TaskId = newTask.TaskId, 
+                BestCombination = "", 
+                CurrentMaxWorth = 0, 
+                CurrentItemsCombination = "", 
+                AllItems = "", CurCombEnd = 0, 
+                CurCombSize = 0, 
+                CheckedCombCount = 0
+            };
             db.ExecutionProcesses.Add(execProcess);
             db.SaveChanges();
             
@@ -65,7 +103,14 @@ namespace Knapsack.Controllers
             var computeModel = new ComputeModel { TaskId = newTask.TaskId, Items = new List<ItemViewModel>()};
             foreach (var i in items)
             {
-                var item = new ItemViewModel {ItemId = i.ItemId, IsChecked = false, ItemName = i.ItemName, Worth = i.Worth, Weight = i.Weight};
+                var item = new ItemViewModel
+                {
+                    ItemId = i.ItemId, 
+                    IsChecked = false, 
+                    ItemName = i.ItemName, 
+                    Worth = i.Worth, 
+                    Weight = i.Weight
+                };
                 computeModel.Items.Add(item);
             }
             

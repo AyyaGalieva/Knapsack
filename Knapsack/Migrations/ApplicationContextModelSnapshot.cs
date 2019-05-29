@@ -41,6 +41,12 @@ namespace Knapsack.Migrations
                     b.Property<string>("BestCombination")
                         .IsRequired();
 
+                    b.Property<int>("CheckedCombCount");
+
+                    b.Property<int>("CurCombEnd");
+
+                    b.Property<int>("CurCombSize");
+
                     b.Property<string>("CurrentItemsCombination")
                         .IsRequired();
 

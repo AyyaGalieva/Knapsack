@@ -48,18 +48,31 @@ namespace Knapsack.Compute
                 
                 task.ExecutionProcess.AllItems = str;
                 db.SaveChanges();
+
+                var size = task.ExecutionProcess.CurCombSize;
+                var end = task.ExecutionProcess.CurCombEnd;
+                var lastComb = task.ExecutionProcess.CurrentItemsCombination;
+                checkedCombCount = task.ExecutionProcess.CheckedCombCount;
+                var flag = String.Equals(lastComb, "");
                 
-                foreach (List<int> subset in EnumerateAllSubsets(set))
+                foreach (List<int> subset in EnumerateAllSubsets(set, (end!=0)?end:set.Count, (size!=0)?size:set.Count, db, task))
                 {
                     var comb = "";
                     for (var i = 0; i < subset.Count; ++i)
                     {
                         comb = String.Concat(comb, subset[i].ToString(), ",");
                     }
-                    comb = comb.Remove(comb.Length-1);
-
-                    task.ExecutionProcess.CurrentItemsCombination = comb;
-                    db.SaveChanges();
+                    comb = comb.Remove(comb.Length-1);                
+                    
+                    if (flag)
+                    {
+                        task.ExecutionProcess.CurrentItemsCombination = comb;
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        flag = String.Equals(lastComb, comb);
+                    }
 
                     var sumWorth = 0;
                     var sumWeight = 0;
@@ -73,21 +86,29 @@ namespace Knapsack.Compute
                         }
                     }
 
-                    if (sumWeight <= task.Capacity)
+                    if (flag)
                     {
-                        if (sumWorth >= maxWorth)
+                        if (sumWeight <= task.Capacity)
                         {
-                            maxWorth = sumWorth;
-                            task.ExecutionProcess.BestCombination = comb;
-                            task.ExecutionProcess.CurrentMaxWorth = maxWorth;
-                            db.SaveChanges();
+                            if (sumWorth >= maxWorth)
+                            {
+                                maxWorth = sumWorth;
+                                task.ExecutionProcess.BestCombination = comb;
+                                task.ExecutionProcess.CurrentMaxWorth = maxWorth;
+                                db.SaveChanges();
+                            }
                         }
                     }
-                    
-                    checkedCombCount++;                    
-                    var percent = (int)(100*checkedCombCount/combCount);
-                    task.PercentComplete = percent;
-                    db.SaveChanges();
+
+                    if (flag)
+                    {
+                        checkedCombCount++;
+                        task.ExecutionProcess.CheckedCombCount = checkedCombCount;
+                        var percent = (int) (100 * checkedCombCount / combCount);
+                        task.PercentComplete = percent;
+                        db.SaveChanges();
+                    }
+
                 }
                 db.Entry(task).Reference("Details").Load();
                 task.Details.MaxWorth = maxWorth;
@@ -95,23 +116,32 @@ namespace Knapsack.Compute
             }
         }
 
-        static IEnumerable<List<int>> EnumerateAllSubsets(List<int> set)
+        static IEnumerable<List<int>> EnumerateAllSubsets(List<int> set, int end, int initSize, ApplicationContext db, Task task)
         {
-            for (int size = set.Count; size > 0; --size)
-                foreach (List<int> subset in EnumerateSubsetsWithSize(set, size, set.Count))
+            for (int size = initSize; size > 0; --size)
+            {
+                task.ExecutionProcess.CurCombSize = size;
+                db.SaveChanges();
+                foreach (List<int> subset in EnumerateSubsetsWithSize(set, size, end, true, db, task))
                     yield return subset;
+            }
         }
 
-        static IEnumerable<List<int>> EnumerateSubsetsWithSize(List<int> set, int size, int end)
+        static IEnumerable<List<int>> EnumerateSubsetsWithSize(List<int> set, int size, int end, bool first, ApplicationContext db, Task task)
         {
             if (size == set.Count)
                 yield return set;
             else
                 for (int i = end; i-- > 0;)
                 {
+                    if (first)
+                    {
+                        task.ExecutionProcess.CurCombEnd = end;
+                        db.SaveChanges();
+                    }
                     List<int> tmpSet = new List<int>(set);
                     tmpSet.RemoveAt(i);
-                    foreach (List<int> subset in EnumerateSubsetsWithSize(tmpSet, size, i))
+                    foreach (List<int> subset in EnumerateSubsetsWithSize(tmpSet, size, i, false, db, task))
                         yield return subset;
                 }
         }
