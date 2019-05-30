@@ -78,7 +78,7 @@ Write(ViewData["Title"]);
             WriteLiteral("</h2>\r\n\r\n<p>");
             EndContext();
             BeginContext(114, 110, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "eb76fb8972b444cbaf401037b6e5de15", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "4f204a61647f4dd78642e1ff9693d479", async() => {
                 BeginContext(212, 8, true);
                 WriteLiteral("New task");
                 EndContext();
@@ -192,7 +192,7 @@ Write(ViewData["Title"]);
             WriteLiteral("\r\n            </th>\r\n            <th>\r\n                <p>");
             EndContext();
             BeginContext(1223, 138, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "60e4cd4cc4a644708f8fb781a7a4da49", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "552af659a8064677aecd5759a0e125b8", async() => {
                 BeginContext(1351, 6, true);
                 WriteLiteral("Delete");
                 EndContext();
@@ -239,7 +239,7 @@ Write(ViewData["Title"]);
             WriteLiteral("                <th>\r\n                    <p>");
             EndContext();
             BeginContext(1493, 141, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "dc70c7b8d74b4a1c909b561796274df3", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5e432a524ae34fdd8238cc6f700cfcf8", async() => {
                 BeginContext(1623, 7, true);
                 WriteLiteral("Details");
                 EndContext();

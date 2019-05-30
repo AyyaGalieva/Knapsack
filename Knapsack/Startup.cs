@@ -32,9 +32,9 @@ namespace Knapsack
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
             
-            string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(connection));
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

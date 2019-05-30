@@ -26,27 +26,27 @@ namespace Knapsack.Controllers
         }
         
         public IActionResult Init()
+        {
+            var tasks = db.Tasks.Include(t => t.Details).ToList();
+            foreach (var task in tasks)
+            {
+                if (task.PercentComplete != 100)
                 {
-                    var tasks = db.Tasks.Include(t => t.Details).ToList();
-                    foreach (var task in tasks)
+                    var items = db.Tasks.Where(t => t.TaskId == task.TaskId).SelectMany(t => t.TaskItems)
+                        .Select(ti => ti.Item);
+                    
+                    var computeModel = new ComputeModel { TaskId = task.TaskId, Items = new List<ItemViewModel>()};
+                    foreach (var i in items)
                     {
-                        if (task.PercentComplete != 100)
-                        {
-                            var items = db.Tasks.Where(t => t.TaskId == task.TaskId).SelectMany(t => t.TaskItems)
-                                .Select(ti => ti.Item);
-                            
-                            var computeModel = new ComputeModel { TaskId = task.TaskId, Items = new List<ItemViewModel>()};
-                            foreach (var i in items)
-                            {
-                                var item = new ItemViewModel {ItemId = i.ItemId, IsChecked = false, ItemName = i.ItemName, Worth = i.Worth, Weight = i.Weight};
-                                computeModel.Items.Add(item);
-                            }
-                            ComputeThread thread = new ComputeThread(computeModel);
-          
-                        }
+                        var item = new ItemViewModel {ItemId = i.ItemId, IsChecked = false, ItemName = i.ItemName, Worth = i.Worth, Weight = i.Weight};
+                        computeModel.Items.Add(item);
                     }
-                    return RedirectToAction("Index", tasks);
+                    var thread = new ComputeThread(computeModel);
+  
                 }
+            }
+            return RedirectToAction("Index", tasks);
+        }
         
         public IActionResult CreateTask()
         {
@@ -85,7 +85,7 @@ namespace Knapsack.Controllers
             db.ExecutionProcesses.Add(execProcess);
             db.SaveChanges();
             
-            var details = new Details {TaskId = newTask.TaskId, ExecutionTime = 0, MaxWorth = 0};
+            var details = new Details {TaskId = newTask.TaskId, ExecutionTime = "", MaxWorth = 0};
             db.Details.Add(details);
             db.SaveChanges();
             
@@ -118,15 +118,15 @@ namespace Knapsack.Controllers
             return RedirectToAction("Index");
         }
         
-        public IActionResult DeleteTask(int taskId)
+        public async Task<IActionResult> DeleteTask(int taskId)
         {
-            var task = db.Tasks.FirstOrDefault(t => t.TaskId == taskId);
+            var task = await db.Tasks.FirstOrDefaultAsync(t => t.TaskId == taskId);
             if (task != null)
             {
                 db.Tasks.Remove(task);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
-            return View("Index", db.Tasks.ToList());
+            return View("Index", await db.Tasks.ToListAsync());
         }
         
         public IActionResult CreateItem(string taskName, int capacity)
@@ -160,11 +160,14 @@ namespace Knapsack.Controllers
         public IActionResult ShowDetails(int taskId)
         {
             var task = db.Tasks.Include(e => e.Details).Include(e => e.ExecutionProcess).FirstOrDefault(t => t.TaskId == taskId);
-            var viewModel = new DetailsViewModel();
-            viewModel.TaskName = task.TaskName;
-            viewModel.Capacity = task.Capacity;
-            viewModel.MaxWorth = task.Details.MaxWorth;
-            
+            var viewModel = new DetailsViewModel
+            {
+                TaskName = task.TaskName,
+                Capacity = task.Capacity,
+                MaxWorth = task.Details.MaxWorth,
+                ExecTime = task.Details.ExecutionTime
+            };
+
             var strsAll = task.ExecutionProcess.AllItems.Split(",");
             var strsTaken = task.ExecutionProcess.BestCombination.Split(",");
             var allItems = new List<int>();

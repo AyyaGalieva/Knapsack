@@ -22,7 +22,8 @@ namespace Knapsack.Migrations
                 {
                     b.Property<int>("TaskId");
 
-                    b.Property<int>("ExecutionTime");
+                    b.Property<string>("ExecutionTime")
+                        .IsRequired();
 
                     b.Property<int>("MaxWorth");
 

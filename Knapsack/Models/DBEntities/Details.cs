@@ -14,6 +14,6 @@ namespace Knapsack
         [Required]
         public int MaxWorth { get; set; }
         [Required]
-        public int ExecutionTime { get; set; }
+        public string ExecutionTime { get; set; }
     }
 }
